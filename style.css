@@ -190,6 +190,8 @@ h1{
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-height: 516px;
+    overflow-y: scroll;
 }
 
 .history_card{
@@ -212,7 +214,7 @@ h1{
     letter-spacing: 0.54px;
 }
 
-.amount{
+#amount{
     font-size: 24px;
     font-weight: 600;
     letter-spacing: 0.72px;
@@ -266,3 +268,18 @@ h1{
     }
 }
 
+.hide{
+    display: none;
+}
+
+.log_out{
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFF;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: #710984;
+    width: 203px;
+    border: none;
+    cursor: pointer;
+}
