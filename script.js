@@ -5,11 +5,12 @@ const loginInput = document.querySelector(".login_input");
 const passwordInput = document.querySelector(".password_input");
 const enterBtn = document.querySelector(".enter");
 const cardBalance = document.querySelector(".balance");
-const userName = document.querySelector(".user");
+const cardOwner = document.querySelector(".user");
 const cardNumber = document.querySelector(".card_numbers");
-const income = document.querySelector('.in');
-const outputs = document.querySelector(".out");
+const incomePlace = document.querySelector('.in');
+const outputsPlace = document.querySelector(".out");
 const historyDiv = document.querySelector(".history");
+const cardNumbersInput = document.querySelector('.card_numbers_input');
 const amountClass = document.getElementById("amount");
 const sendBtn = document.querySelector(".send");
 
@@ -111,9 +112,9 @@ const account2 = {
 // Akkountlarni accounts arrayiga yig'ib oldik
 const accounts = [account1, account2];
 
-//////////////////////////////////////////////////
-///// Functions
-/// Har bir akkountga username qo'shadigan funksiya
+
+// functions
+
 const createLogin = function () {
   accounts.forEach((acc) => {
     // Gali kelgan akkountga username qo'shamiz
@@ -122,104 +123,179 @@ const createLogin = function () {
       acc.owner.lastname[0].toLowerCase();
   });
 };
-/*
-Dastur ishga tushgan paytida yuqoridagi funksiyani 
-chaqirib har bir akkountga username qo'shib oldik.
-!!!!createLogin funksiyasini tahlil qilib ko'rib chiqing.
-*/
 createLogin();
+
+function currencyFormatter(amount, locale, currency) {
+  return amount.toLocaleString(locale, {
+    style: 'currency',
+    currency: currency
+  });
+};
+
+const calcBalance = (transfers)=>{
+  return +transfers.reduce((bal, tr)=> bal+tr.amount, 0).toFixed(2);
+};
+
+const maskCreditCard =(cardNumber)=>{
+  const str = cardNumber + '';
+  const last = str.slice(-4);
+  return last.padStart(str.length, '*');
+};
+
+const setCardInfo =(acc)=>{
+  cardOwner.textContent = Object.values(acc.owner).join(' ');
+  cardNumber.textContent = maskCreditCard(acc.cardNumber);
+  const bal = calcBalance(acc.transfers);
+  cardBalance.textContent = currencyFormatter(bal, acc.locale, acc.currency)
+}
+
+const setSummary =(acc)=>{
+  const inCome = acc.transfers.filter(tr=> tr.amount > 0).reduce((bal,tr)=>bal+tr.amount, 0);
+  const expense = acc.transfers.filter(tr=> tr.amount < 0).reduce((bal, tr)=> bal+tr.amount, 0);
+
+  incomePlace.textContent = currencyFormatter(inCome, acc.locale, acc.currency);
+  outputsPlace.textContent = currencyFormatter(expense, acc.locale, acc.currency);
+}
+
+const setTransferHistory =(acc)=>{
+  const dateFormat =(date)=> new Date(date).toLocaleString(acc.locale);
+  acc.transfers.forEach((tr)=>{
+    const hCard = `
+      <div class="history_card">
+        <div class="card_left">
+            <h2 class="to_person">${acc.owner.firstname} ${acc.owner.lastname}</h2>
+            <p class="date">${dateFormat(tr.date)}</p>
+        </div>
+        <h2 id='amount' class = "${tr.amount > 0 ? "in_amount" : "out_amount"}">${tr.amount}</h2>
+      </div> 
+    `;
+
+    historyDiv.insertAdjacentHTML('afterbegin', hCard);
+  });
+}
+
+const setAllInfo =(acc)=>{
+  setCardInfo(acc);
+  setSummary(acc);
+  setTransferHistory(acc);
+};
 
 let currentUser;
 
-enterBtn.addEventListener('click', (e)=>{
+enterBtn.addEventListener('click', (e)=> {
   e.preventDefault();
-
-  let acc = accounts.find((acc) => loginInput.value == acc.username);
+  acc = accounts.find(acc=> loginInput.value === acc.username);
+  if(!acc) return;
+  if(acc.password !== passwordInput.value) return;
 
   currentUser = acc;
 
-  if (loginInput.value !== currentUser.username) return;
+  user.textContent = `Xush kelibsiz ${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
 
-  if (passwordInput.value !== currentUser.password) return;
+  loginInput.value = '';
+  passwordInput.value = '';
 
-  loginInput.value = "bo'qni ye";
-  passwordInput.value = "bo'qni ye";
+  form.classList.add('hide');
+  logOut.classList.remove('hide');
 
-  form.classList.add("hide");
+  setAllInfo(currentUser);
+});
 
-  logOut.classList.remove("hide");
+// let currentUser;
 
-  user.textContent = `Salom ${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
+// enterBtn.addEventListener('click', (e)=>{
+//   e.preventDefault();
 
-  let sum = 0;
-  let positiveBalance = [];
-  let negativeBalance = [];
-  let amounts = [];
-  let transferDate =[];
+//   let acc = accounts.find((acc) => loginInput.value == acc.username);
+
+//   currentUser = acc;
+
+//   if (loginInput.value !== currentUser.username) return;
+
+//   if (passwordInput.value !== currentUser.password) return;
+
+//   loginInput.value = "bo'qni ye";
+//   passwordInput.value = "bo'qni ye";
+
+//   form.classList.add("hide");
+
+//   logOut.classList.remove("hide");
+
+//   user.textContent = `Salom ${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
+
+//   let sum = 0;
+//   let positiveBalance = [];
+//   let negativeBalance = [];
+//   let amounts = [];
+//   let transferDate =[];
+//   let amountList = [];
+
+//   for (let i = 0; i < acc.transfers.length; i++) {
+//     const amount = acc.transfers[i].amount;
+//     const date = acc.transfers[i].date;
+//     amountList.push(amount);
+
+//     amounts.push(amount);
+//     transferDate.push(date);
+
+//     sum+=amount
+//     if(amount<0){
+//       negativeBalance.push(amount);
+//     }
+//     else{
+//       positiveBalance.push(amount);
+//     }
+//   };
 
 
-  for (let i = 0; i < acc.transfers.length; i++) {
-    const amount = acc.transfers[i].amount;
-    const date = acc.transfers[i].date;
-
-    amounts.push(amount);
-    transferDate.push(date);
-
-    sum+=amount
-    if(amount<0){
-      negativeBalance.push(amount);
-    }
-    else{
-      positiveBalance.push(amount);
-    }
-  };
-
-  console.log(transferDate);
-
-  let positiveSum = positiveBalance.reduce((sum, num)=> sum+num, 0);
-  let negativeSum = negativeBalance.reduce((sum, num) => sum + num, 0);
+//   let positiveSum = positiveBalance.reduce((sum, num)=> sum+num, 0);
+//   let negativeSum = negativeBalance.reduce((sum, num) => sum + num, 0);
 
   
   
 
-  function displayMovements(movements){
-    movements.forEach(move => {
-      let html = `
-        <div class="history_card">
-          <div class="card_left">
-              <h2 class="to_person">${currentUser.owner.firstname} ${currentUser.owner.lastname}</h2>
-              <div class="data_div">
-                  <p class="data"></p>
-                  <p class="hour">18:50</p>
-              </div>
-          </div>
-          <h2 id='amount'>${move}</h2>
-        </div> 
-      `;
-      console.log(move);
+//   function displayMovements(movements){
+//     movements.forEach(move => {
+//       let html = `
+        // <div class="history_card">
+        //   <div class="card_left">
+        //       <h2 class="to_person">${currentUser.owner.firstname} ${currentUser.owner.lastname}</h2>
+        //       <div class="data_div">
+        //           <p class="data"></p>
+        //           <p class="hour">18:50</p>
+        //       </div>
+        //   </div>
+        //   <h2 id='amount'>${move}</h2>
+        // </div> 
+//       `;
 
-      historyDiv.insertAdjacentHTML('beforeend', html);
-    });
-  };
+//       historyDiv.insertAdjacentHTML('beforeend', html);
+//     });
+//   };
 
-  displayMovements(amounts);
-  // amountClass.classList.add("in_amount");
-
+//   displayMovements(amounts);
+//   // amountClass.classList.add("in_amount");
 
 
-  income.textContent = `+${positiveSum} $`
-  outputs.textContent = `${negativeSum} $`
+//   income.textContent = `+${positiveSum} $`
+//   outputs.textContent = `${negativeSum} $`
 
-  cardBalance.textContent = `$ ${sum}`;
+//   cardBalance.textContent = `$ ${sum}`;
 
-  userName.textContent = `${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
+//   userName.textContent = `${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
 
-  cardNumber.textContent = currentUser.cardNumber;
-})
+//   cardNumber.textContent = currentUser.cardNumber;
 
-sendBtn.addEventListener('click', (e)=>{
-  e.preventDefault();
-  console.log('bosildi');
-  amountClass.classList.remove("in_amount");
-  amountClass.classList.add("out_amount");
-})
+//   sendBtn.addEventListener('click', (e)=>{
+//     if(cardNumbersInput.value == account1.cardNumber && account2.cardNumber){
+//       console.log(true);
+//     }
+//     else{
+//       console.log(false);
+//     }
+//   })
+// })
+
+// sendBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+// });
