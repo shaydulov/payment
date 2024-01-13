@@ -10,8 +10,8 @@ const cardNumber = document.querySelector(".card_numbers");
 const incomePlace = document.querySelector('.in');
 const outputsPlace = document.querySelector(".out");
 const historyDiv = document.querySelector(".history");
-const cardNumbersInput = document.querySelector('.card_numbers_input');
-const amountClass = document.getElementById("amount");
+const cardNumberInput = document.querySelector('.card_numbers_input');
+const amountInput = document.querySelector(".amount");
 const sendBtn = document.querySelector(".send");
 
 //////// Data - Dasturda kerak bo'ladigan ma'lumotlar
@@ -158,6 +158,7 @@ const setSummary =(acc)=>{
 }
 
 const setTransferHistory =(acc)=>{
+  historyDiv.innerHTML = '';
   const dateFormat =(date)=> new Date(date).toLocaleString(acc.locale);
   acc.transfers.forEach((tr)=>{
     const hCard = `
@@ -166,7 +167,7 @@ const setTransferHistory =(acc)=>{
             <h2 class="to_person">${acc.owner.firstname} ${acc.owner.lastname}</h2>
             <p class="date">${dateFormat(tr.date)}</p>
         </div>
-        <h2 id='amount' class = "${tr.amount > 0 ? "in_amount" : "out_amount"}">${tr.amount}</h2>
+        <h2 id='amount' class = "${tr.amount > 0 ? "in_amount" : "out_amount"}">${currencyFormatter(tr.amount, acc.locale, acc.currency)}</h2>
       </div> 
     `;
 
@@ -201,101 +202,42 @@ enterBtn.addEventListener('click', (e)=> {
   setAllInfo(currentUser);
 });
 
-// let currentUser;
 
-// enterBtn.addEventListener('click', (e)=>{
-//   e.preventDefault();
-
-//   let acc = accounts.find((acc) => loginInput.value == acc.username);
-
-//   currentUser = acc;
-
-//   if (loginInput.value !== currentUser.username) return;
-
-//   if (passwordInput.value !== currentUser.password) return;
-
-//   loginInput.value = "bo'qni ye";
-//   passwordInput.value = "bo'qni ye";
-
-//   form.classList.add("hide");
-
-//   logOut.classList.remove("hide");
-
-//   user.textContent = `Salom ${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
-
-//   let sum = 0;
-//   let positiveBalance = [];
-//   let negativeBalance = [];
-//   let amounts = [];
-//   let transferDate =[];
-//   let amountList = [];
-
-//   for (let i = 0; i < acc.transfers.length; i++) {
-//     const amount = acc.transfers[i].amount;
-//     const date = acc.transfers[i].date;
-//     amountList.push(amount);
-
-//     amounts.push(amount);
-//     transferDate.push(date);
-
-//     sum+=amount
-//     if(amount<0){
-//       negativeBalance.push(amount);
-//     }
-//     else{
-//       positiveBalance.push(amount);
-//     }
-//   };
-
-
-//   let positiveSum = positiveBalance.reduce((sum, num)=> sum+num, 0);
-//   let negativeSum = negativeBalance.reduce((sum, num) => sum + num, 0);
-
+sendBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
   
-  
+  let recipient = accounts.find(
+    (acc) => +cardNumberInput.value === acc.cardNumber
+  );
+  if(!recipient) alert(`karta ma'lumotlari topilmadi`);
+  if(recipient.cardNumber == currentUser.cardNumber){
+    alert("ля ты Крыса!");
+    return;
+  }
+  if(recipient.currency == 'UZS'){
+    recipient.transfers.push({
+      amount: +amountInput.value * 1232776,
+      date: new Date().toISOString(),
+    });
+  }
+  else{
+    recipient.transfers.push({
+      amount: +amountInput.value / 12327.76,
+      date: new Date().toISOString(),
+    });
+  }
 
-//   function displayMovements(movements){
-//     movements.forEach(move => {
-//       let html = `
-        // <div class="history_card">
-        //   <div class="card_left">
-        //       <h2 class="to_person">${currentUser.owner.firstname} ${currentUser.owner.lastname}</h2>
-        //       <div class="data_div">
-        //           <p class="data"></p>
-        //           <p class="hour">18:50</p>
-        //       </div>
-        //   </div>
-        //   <h2 id='amount'>${move}</h2>
-        // </div> 
-//       `;
+  currentUser.transfers.push({
+    amount: -amountInput.value,
+    date: new Date().toISOString(),
+  });
 
-//       historyDiv.insertAdjacentHTML('beforeend', html);
-//     });
-//   };
+  setAllInfo(currentUser);
+  cardNumberInput.value = "";
+  amountInput.value = "";
+})
 
-//   displayMovements(amounts);
-//   // amountClass.classList.add("in_amount");
-
-
-//   income.textContent = `+${positiveSum} $`
-//   outputs.textContent = `${negativeSum} $`
-
-//   cardBalance.textContent = `$ ${sum}`;
-
-//   userName.textContent = `${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
-
-//   cardNumber.textContent = currentUser.cardNumber;
-
-//   sendBtn.addEventListener('click', (e)=>{
-//     if(cardNumbersInput.value == account1.cardNumber && account2.cardNumber){
-//       console.log(true);
-//     }
-//     else{
-//       console.log(false);
-//     }
-//   })
-// })
-
-// sendBtn.addEventListener("click", (e) => {
-//   e.preventDefault();
-// });
+logOut.addEventListener('click', ()=>{
+  form.classList.remove("hide");
+  logOut.classList.add("hide");
+})
