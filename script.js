@@ -13,6 +13,8 @@ const historyDiv = document.querySelector(".history");
 const cardNumberInput = document.querySelector('.card_numbers_input');
 const amountInput = document.querySelector(".amount");
 const sendBtn = document.querySelector(".send");
+const hero = document.querySelector(".hero");
+const homePage = document.querySelector(".home_page");
 
 //////// Data - Dasturda kerak bo'ladigan ma'lumotlar
 // Brinchi account ma'lumoti
@@ -62,11 +64,11 @@ const account1 = {
 };
 // Ikkinchi account ma'lumoti
 const account2 = {
-  password: "2222",
+  password: "2005",
   cardNumber: 8411347213244488,
   owner: {
-    firstname: "Sardor",
-    lastname: "Abdug'aniyev",
+    firstname: "Farangiz",
+    lastname: "Razzoqova"
   },
   transfers: [
     {
@@ -109,8 +111,157 @@ const account2 = {
   currency: "USD",
   locale: "en-EN",
 }
+
+const account3 = {
+  password: "1977",
+  cardNumber: 8600890034441213,
+  owner: {
+    firstname: "Shokir",
+    lastname: "Shukurov",
+  },
+  transfers: [
+    {
+      amount: 50000,
+      date: "2019-11-18T21:31:17.178Z",
+    },
+    {
+      amount: 400000,
+      date: "2019-12-23T07:42:02.383Z",
+    },
+    {
+      amount: -15000,
+      date: "2020-01-28T09:15:04.904Z",
+    },
+    {
+      amount: -7000,
+      date: "2020-04-01T10:17:24.185Z",
+    },
+    {
+      amount: -64200.21,
+      date: "2020-05-08T14:11:59.604Z",
+    },
+    {
+      amount: 31000,
+      date: "2020-05-27T17:01:17.194Z",
+    },
+    {
+      amount: -1000,
+      date: "2020-07-11T23:36:17.929Z",
+    },
+    {
+      amount: 85000,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+    {
+      amount: -30000,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+  ],
+  currency: "UZS",
+  locale: "ru-RU",
+};
+
+const account4 = {
+  password: "2303",
+  cardNumber: 678945904542005,
+  owner: {
+    firstname: "Jahongir",
+    lastname: "Shaydulov",
+  },
+  transfers: [
+    {
+      amount: 6000,
+      date: "2019-11-18T21:31:17.178Z",
+    },
+    {
+      amount: 4400,
+      date: "2019-12-23T07:42:02.383Z",
+    },
+    {
+      amount: -250,
+      date: "2020-01-28T09:15:04.904Z",
+    },
+    {
+      amount: -800,
+      date: "2020-04-01T10:17:24.185Z",
+    },
+    {
+      amount: -640.21,
+      date: "2020-05-08T14:11:59.604Z",
+    },
+    {
+      amount: -410,
+      date: "2020-05-27T17:01:17.194Z",
+    },
+    {
+      amount: -2000,
+      date: "2020-07-11T23:36:17.929Z",
+    },
+    {
+      amount: 9500,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+    {
+      amount: -50,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+  ],
+  currency: "USD",
+  locale: "en-EN",
+};
+
+const account5 = {
+  password: "2022",
+  cardNumber: 8600901234782022,
+  owner: {
+    firstname: "Umar",
+    lastname: "ismoilov",
+  },
+  transfers: [
+    {
+      amount: 50000,
+      date: "2019-11-18T21:31:17.178Z",
+    },
+    {
+      amount: 400000,
+      date: "2019-12-23T07:42:02.383Z",
+    },
+    {
+      amount: -15000,
+      date: "2020-01-28T09:15:04.904Z",
+    },
+    {
+      amount: -7000,
+      date: "2020-04-01T10:17:24.185Z",
+    },
+    {
+      amount: -64200.21,
+      date: "2020-05-08T14:11:59.604Z",
+    },
+    {
+      amount: 31000,
+      date: "2020-05-27T17:01:17.194Z",
+    },
+    {
+      amount: -1000,
+      date: "2020-07-11T23:36:17.929Z",
+    },
+    {
+      amount: 85000,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+    {
+      amount: -30000,
+      date: "2020-07-12T10:51:36.790Z",
+    },
+  ],
+  currency: "UZS",
+  locale: "ru-RU",
+};
+
+
 // Akkountlarni accounts arrayiga yig'ib oldik
-const accounts = [account1, account2];
+const accounts = [account1, account2, account3, account4, account5];
 
 
 // functions
@@ -181,7 +332,7 @@ const setAllInfo =(acc)=>{
   setTransferHistory(acc);
 };
 
-let currentUser;
+hero.classList.add('hide');
 
 enterBtn.addEventListener('click', (e)=> {
   e.preventDefault();
@@ -190,6 +341,8 @@ enterBtn.addEventListener('click', (e)=> {
   if(acc.password !== passwordInput.value) return;
 
   currentUser = acc;
+  homePage.classList.add('hide');
+  hero.classList.remove('hide');
 
   user.textContent = `Xush kelibsiz ${currentUser.owner.firstname} ${currentUser.owner.lastname}`;
 
@@ -240,4 +393,8 @@ sendBtn.addEventListener('click', (e)=>{
 logOut.addEventListener('click', ()=>{
   form.classList.remove("hide");
   logOut.classList.add("hide");
+
+  hero.classList.add('hide')
+  homePage.classList.remove('hide');
+  user.textContent = 'Payments App'
 })
