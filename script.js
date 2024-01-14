@@ -369,7 +369,7 @@ sendBtn.addEventListener('click', (e)=>{
   }
   if(recipient.currency == 'UZS'){
     recipient.transfers.push({
-      amount: +amountInput.value * 1232776,
+      amount: +amountInput.value * 12327.76,
       date: new Date().toISOString(),
     });
   }
